@@ -10,7 +10,7 @@ private TextView textView;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bulldog_list);
-        textView = (TextView) findViewById(R.id.textView);
+        textView = (TextView) findViewById(R.id.textView2);
 
         String email = getIntent().getStringExtra("email");
         textView.setText(email);
