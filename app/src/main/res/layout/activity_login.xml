@@ -43,5 +43,4 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="8dp" />
 
-</android.s
-    upport.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>
