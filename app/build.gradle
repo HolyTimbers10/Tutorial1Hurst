@@ -1,4 +1,7 @@
 apply plugin: 'com.android.application'
+//this will apply a plugin for Realm but need to still define it in the list of dependencies
+apply plugin: 'com.android.application'
+apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 28
