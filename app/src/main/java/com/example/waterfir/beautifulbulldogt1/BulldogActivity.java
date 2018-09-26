@@ -1,11 +1,15 @@
 package com.example.waterfir.beautifulbulldogt1;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.jar.Attributes;
@@ -19,8 +23,14 @@ public class BulldogActivity extends AppCompatActivity {
     private EditText voteRating;
     private Realm realm;
     private User user;
-    private Button saveButton;
+    private Button voteButton;
     private Vote vote;
+    private ImageView imageView2;
+    private ImageView saveButton;
+    private Bulldog bulldog;
+
+
+
 
 
     @Override
@@ -34,16 +44,15 @@ public class BulldogActivity extends AppCompatActivity {
         realm = Realm.getDefaultInstance();
 
         dogAgeView = (TextView) findViewById(R.id.dog_age);
-        realm = Realm.getDefaultInstance();
-
         dogNameView = (TextView) findViewById(R.id.dog_name);
-        realm = Realm.getDefaultInstance();
-
         voteRating = (EditText) findViewById(R.id.vote_count);
-        realm = Realm.getDefaultInstance();
+        voteButton = (Button) findViewById(R.id.vote_button);
+        imageView2 = (ImageView) findViewById(R.id.imageView);
+        voteButton = (Button) findViewById(R.id.vote_button);
 
-        saveButton = (Button) findViewById(R.id.save_button);
-        realm = Realm.getDefaultInstance();
+
+
+
 
         //this will allow us to pass the selected bulldog to the bulldog activity
         String id = (String) getIntent().getStringExtra("bulldog");
@@ -52,32 +61,32 @@ public class BulldogActivity extends AppCompatActivity {
         dogNameView.setText(bulldog.getName());
         dogAgeView.setText(bulldog.getAge());
 
+        if(bulldog.getImage() != null){
+            Bitmap bmp = BitmapFactory.decodeByteArray(bulldog.getImage(),0,
+                    bulldog.getImage().length);
+            imageView2.setImageBitmap(bmp);
+        }
 
 
         Realm realm = Realm.getDefaultInstance();
         String username = (String) getIntent().getStringExtra("username");
         user = realm.where(User.class).equalTo("username", username).findFirst();
 
-        saveButton.setOnClickListener(new View.OnClickListener(){
+        voteButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 Realm realm = Realm.getDefaultInstance();
                 realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                  Vote vote = new Vote();
-                  vote.setRating(Integer.parseInt(voteRating.getText().toString()));
-                  vote.setBulldog(bulldog);
-                  vote.setOwner(user);
-                  realm.copyToRealm(vote);
-
-
-                 }
-                 });
-
-                            finish();//this dismisses the vote
-
-
+                    @Override
+                    public void execute(Realm realm) {
+                        Vote vote = new Vote();
+                        vote.setRating(Integer.parseInt(voteRating.getText().toString()));
+                        vote.setBulldog(bulldog);
+                        vote.setOwner(user);
+                        realm.copyToRealm(vote);
+                        finish();//this dismisses the vote
+                    }
+                });
             }
         });
     }

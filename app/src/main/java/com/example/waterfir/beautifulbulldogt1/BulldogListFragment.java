@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.FutureTask;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -28,6 +29,7 @@ public class BulldogListFragment extends Fragment {
     private RecyclerView bulldogList;//this var is for the recycler view
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter bulldogAdapter;
+    private RealmResults<Bulldog> bulldogs;
 
     public BulldogListFragment() {
         // Required empty public constructor
@@ -41,40 +43,47 @@ public class BulldogListFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_bulldog_list,container, false);
 
-        //this will querry our realm for all bulldogs
-        Realm realm = Realm.getDefaultInstance();
-        final RealmResults<Bulldog> bulldogs = realm.where(Bulldog.class).findAll();
-
-        Log.v("count", String.valueOf(bulldogs.size()));
-
         //this is adding a reference to the recycler view so we can find it
         bulldogList = (RecyclerView)view.findViewById(R.id.bulldog_list);
-
         layoutManager = new LinearLayoutManager(getContext());
         bulldogList.setLayoutManager(layoutManager);
+        refreshList();
 
-        final MainActivity mainActivity = (MainActivity) this.getActivity();
-        //this will pass the clicklistener into the adapter
-
-        RecyclerViewClickListener listener = new RecyclerViewClickListener() {
-
-            @Override
-            public void onClick(View view, int position) {
-
-                Bulldog bulldog = (Bulldog) bulldogs.get(position);
-                //this will pass the bulldog to the next activity
-                Intent intent = new Intent(view.getContext(), BulldogActivity.class);
-                intent.putExtra("username", mainActivity.user.getUsername());
-                intent.putExtra("bulldog",bulldog.getId());
-                startActivity(intent);
-            }
-        };
-
-        bulldogAdapter = new BulldogAdapter(getContext(), bulldogs, listener);
-        bulldogList.setAdapter(bulldogAdapter);
-//bulldogs.add(bulldog1); will create an adapter inside the bulldog fragment
         return view;
+
+            }
+
+        public void onResume(){
+            super.onResume();
+            refreshList();
+        }
+
+        private void refreshList(){
+            Realm realm = Realm.getDefaultInstance();
+            bulldogs = realm.where(Bulldog.class).findAll();
+            final MainActivity mainActivity = (MainActivity)this.getActivity();
+
+            RecyclerViewClickListener listener = new RecyclerViewClickListener() {
+                @Override
+                public void onClick(View view, int position) {
+
+                    Bulldog bulldog = (Bulldog) bulldogs.get(position);
+                        //this will pass the bulldog to the next activity
+                        Intent intent = new Intent(view.getContext(), BulldogActivity.class);
+                        intent.putExtra("username", mainActivity.user.getUsername());
+                        intent.putExtra("bulldog",bulldog.getId());
+                        startActivity(intent);
+                    }
+                };
+            BulldogAdapter adapter = new BulldogAdapter(getActivity(), bulldogs,listener);
+            bulldogList.setAdapter(adapter);
+        }
+
+           // bulldogAdapter = new BulldogAdapter(getContext(), bulldog, listener);
+           // bulldogList.setAdapter(bulldogAdapter);
+            //bulldogs.add(bulldog1); will create an adapter inside the bulldog fragment
+            //return view;
 
     }
 
-}
+
